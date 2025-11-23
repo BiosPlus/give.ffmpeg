@@ -26,6 +26,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-nonfree \
     --enable-version3 \
     --enable-libx265 \
+    --enable-libvpx \
     --disable-debug \
     --disable-doc \
     --disable-htmlpages \
@@ -88,6 +89,8 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     \
     --enable-encoder=libx265 \
     --enable-encoder=libx264 \
+    --enable-encoder=libvpx_vp8 \
+    --enable-encoder=libvpx_vp9 \
     --enable-encoder=png \
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \

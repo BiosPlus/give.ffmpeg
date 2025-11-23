@@ -27,6 +27,11 @@ jobs:
             libssl-dev \
             zlib1g-dev
 
+      - name: Build libvpx
+        run: |
+          chmod +x scripts/build-libvpx-linux.sh
+          ./scripts/build-libvpx-linux.sh
+
       - name: Build x265
         run: |
           chmod +x scripts/build-x265-linux.sh
@@ -64,6 +69,11 @@ jobs:
       - name: Install dependencies
         run: |
           brew install nasm pkg-config cmake
+
+      - name: Build libvpx
+        run: |
+          chmod +x scripts/build-libvpx-macos.sh
+          ./scripts/build-libvpx-macos.sh
 
       - name: Build x265
         run: |
@@ -116,6 +126,11 @@ jobs:
             git
             diffutils
             pkg-config
+
+      - name: Build libvpx
+        run: |
+          chmod +x scripts/build-libvpx-windows.sh
+          ./scripts/build-libvpx-windows.sh
 
       - name: Build x265
         run: |
