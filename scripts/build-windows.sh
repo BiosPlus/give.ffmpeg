@@ -15,6 +15,8 @@ cd ffmpeg-src
 
 # Configure FFmpeg with minimal but optimized build
 echo "Configuring FFmpeg..."
+export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
+
 ./configure \
     --prefix="$PREFIX" \
     --enable-gpl \
@@ -30,7 +32,9 @@ echo "Configuring FFmpeg..."
     --enable-optimizations \
     --disable-shared \
     --enable-static \
-    --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic" \
+    --enable-libx264 \
+    --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic -I$PREFIX/include" \
+    --extra-ldflags="-L$PREFIX/lib" \
     \
     --disable-everything \
     \
@@ -78,6 +82,7 @@ echo "Configuring FFmpeg..."
     --enable-decoder=png \
     --enable-decoder=mjpeg \
     \
+    --enable-encoder=libx264 \
     --enable-encoder=png \
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \
