@@ -8,6 +8,9 @@ FFMPEG_VERSION="master"
 PREFIX="$(pwd)/ffmpeg-build"
 JOBS=$(nproc)
 
+# Set up pkg-config path for external libraries
+export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
+
 # Clone FFmpeg
 echo "Cloning FFmpeg..."
 git clone --depth 1 --branch $FFMPEG_VERSION https://github.com/FFmpeg/FFmpeg.git ffmpeg-src
@@ -20,6 +23,7 @@ echo "Configuring FFmpeg..."
     --enable-gpl \
     --enable-nonfree \
     --enable-version3 \
+    --enable-libx265 \
     --disable-debug \
     --disable-doc \
     --disable-htmlpages \
@@ -30,7 +34,8 @@ echo "Configuring FFmpeg..."
     --enable-optimizations \
     --disable-shared \
     --enable-static \
-    --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic" \
+    --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic -I$PREFIX/include" \
+    --extra-ldflags="-L$PREFIX/lib" \
     \
     --disable-everything \
     \
@@ -78,6 +83,7 @@ echo "Configuring FFmpeg..."
     --enable-decoder=png \
     --enable-decoder=mjpeg \
     \
+    --enable-encoder=libx265 \
     --enable-encoder=png \
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \

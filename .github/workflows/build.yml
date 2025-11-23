@@ -23,8 +23,14 @@ jobs:
             yasm \
             pkg-config \
             git \
+            cmake \
             libssl-dev \
             zlib1g-dev
+
+      - name: Build x265
+        run: |
+          chmod +x scripts/build-x265-linux.sh
+          ./scripts/build-x265-linux.sh
 
       - name: Build FFmpeg
         run: |
@@ -52,7 +58,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install nasm pkg-config
+          brew install nasm pkg-config cmake
+
+      - name: Build x265
+        run: |
+          chmod +x scripts/build-x265-macos.sh
+          ./scripts/build-x265-macos.sh
 
       - name: Build FFmpeg
         run: |
@@ -90,10 +101,16 @@ jobs:
             mingw-w64-ucrt-x86_64-toolchain
             mingw-w64-ucrt-x86_64-nasm
             mingw-w64-ucrt-x86_64-yasm
+            mingw-w64-ucrt-x86_64-cmake
             make
             git
             diffutils
             pkg-config
+
+      - name: Build x265
+        run: |
+          chmod +x scripts/build-x265-windows.sh
+          ./scripts/build-x265-windows.sh
 
       - name: Build FFmpeg
         run: |
