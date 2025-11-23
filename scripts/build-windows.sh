@@ -8,22 +8,6 @@ FFMPEG_VERSION="master"
 PREFIX="$(pwd)/ffmpeg-build"
 JOBS=$(nproc)
 
-# Build x264 from source
-echo "Building x264 from source..."
-git clone --depth 1 https://code.videolan.org/videolan/x264.git x264-src
-cd x264-src
-
-./configure \
-    --prefix="$PREFIX" \
-    --enable-static \
-    --disable-cli \
-    --disable-opencl \
-    --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic"
-
-make -j$JOBS
-make install
-cd ..
-
 # Clone FFmpeg
 echo "Cloning FFmpeg..."
 git clone --depth 1 --branch $FFMPEG_VERSION https://github.com/FFmpeg/FFmpeg.git ffmpeg-src

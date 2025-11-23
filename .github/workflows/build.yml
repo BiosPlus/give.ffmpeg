@@ -26,6 +26,11 @@ jobs:
             libssl-dev \
             zlib1g-dev
 
+      - name: Build x264
+        run: |
+          chmod +x scripts/build-x264-linux.sh
+          ./scripts/build-x264-linux.sh
+
       - name: Build FFmpeg
         run: |
           chmod +x scripts/build-linux.sh
@@ -53,6 +58,11 @@ jobs:
       - name: Install dependencies
         run: |
           brew install nasm pkg-config
+
+      - name: Build x264
+        run: |
+          chmod +x scripts/build-x264-macos.sh
+          ./scripts/build-x264-macos.sh
 
       - name: Build FFmpeg
         run: |
@@ -94,6 +104,11 @@ jobs:
             git
             diffutils
             pkg-config
+
+      - name: Build x264
+        run: |
+          chmod +x scripts/build-x264-windows.sh
+          ./scripts/build-x264-windows.sh
 
       - name: Build FFmpeg
         run: |
