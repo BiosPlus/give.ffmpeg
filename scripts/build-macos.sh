@@ -8,6 +8,22 @@ FFMPEG_VERSION="master"
 PREFIX="$(pwd)/ffmpeg-build"
 JOBS=$(sysctl -n hw.ncpu)
 
+# Build x264 from source
+echo "Building x264 from source..."
+git clone --depth 1 https://code.videolan.org/videolan/x264.git x264-src
+cd x264-src
+
+./configure \
+    --prefix="$PREFIX" \
+    --enable-static \
+    --disable-cli \
+    --disable-opencl \
+    --extra-cflags="-O3 -mcpu=apple-m1"
+
+make -j$JOBS
+make install
+cd ..
+
 # Clone FFmpeg
 echo "Cloning FFmpeg..."
 git clone --depth 1 --branch $FFMPEG_VERSION https://github.com/FFmpeg/FFmpeg.git ffmpeg-src
@@ -15,6 +31,8 @@ cd ffmpeg-src
 
 # Configure FFmpeg with minimal but optimized build
 echo "Configuring FFmpeg..."
+export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
+
 ./configure \
     --prefix="$PREFIX" \
     --enable-gpl \
@@ -31,7 +49,9 @@ echo "Configuring FFmpeg..."
     --disable-shared \
     --enable-static \
     --enable-pic \
-    --extra-cflags="-O3 -mcpu=apple-m1" \
+    --enable-libx264 \
+    --extra-cflags="-O3 -mcpu=apple-m1 -I$PREFIX/include" \
+    --extra-ldflags="-L$PREFIX/lib" \
     \
     --disable-everything \
     \
@@ -79,6 +99,7 @@ echo "Configuring FFmpeg..."
     --enable-decoder=png \
     --enable-decoder=mjpeg \
     \
+    --enable-encoder=libx264 \
     --enable-encoder=png \
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \
