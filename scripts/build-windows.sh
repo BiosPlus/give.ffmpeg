@@ -50,6 +50,7 @@ echo "Configuring FFmpeg..."
     --enable-demuxer=wav \
     --enable-demuxer=image2 \
     --enable-demuxer=concat \
+    --enable-demuxer=lavfi \
     \
     --enable-muxer=mp4 \
     --enable-muxer=matroska \
@@ -82,6 +83,7 @@ echo "Configuring FFmpeg..."
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \
     --enable-encoder=pcm_s24le \
+    --enable-encoder=flac \
     \
     --enable-parser=h264 \
     --enable-parser=hevc \
@@ -113,7 +115,13 @@ echo "Configuring FFmpeg..."
     --enable-filter=null \
     --enable-filter=format \
     --enable-filter=aformat \
-    --enable-filter=fps
+    --enable-filter=fps \
+    --enable-filter=testsrc \
+    --enable-filter=testsrc2 \
+    --enable-filter=sine \
+    --enable-filter=color \
+    --enable-filter=aevalsrc \
+    --enable-filter=atempo
 
 # Build
 echo "Building FFmpeg with $JOBS jobs..."
