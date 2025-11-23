@@ -36,6 +36,11 @@ jobs:
           ./ffmpeg-build/bin/ffmpeg -version
           ./ffmpeg-build/bin/ffprobe -version
 
+      - name: Run test suite
+        run: |
+          chmod +x tests/*.sh
+          ./tests/run-tests.sh
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -63,6 +68,11 @@ jobs:
         run: |
           ./ffmpeg-build/bin/ffmpeg -version
           ./ffmpeg-build/bin/ffprobe -version
+
+      - name: Run test suite
+        run: |
+          chmod +x tests/*.sh
+          ./tests/run-tests.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -104,6 +114,13 @@ jobs:
         run: |
           ./ffmpeg-build/bin/ffmpeg.exe -version
           ./ffmpeg-build/bin/ffprobe.exe -version
+
+      - name: Run test suite
+        run: |
+          chmod +x tests/*.sh
+          export FFMPEG_BIN=./ffmpeg-build/bin/ffmpeg.exe
+          export FFPROBE_BIN=./ffmpeg-build/bin/ffprobe.exe
+          ./tests/run-tests.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
