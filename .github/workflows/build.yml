@@ -31,6 +31,11 @@ jobs:
         run: |
           chmod +x scripts/build-x265-linux.sh
           ./scripts/build-x265-linux.sh
+          
+      - name: Build x264
+        run: |
+          chmod +x scripts/build-x264-linux.sh
+          ./scripts/build-x264-linux.sh
 
       - name: Build FFmpeg
         run: |
@@ -64,6 +69,11 @@ jobs:
         run: |
           chmod +x scripts/build-x265-macos.sh
           ./scripts/build-x265-macos.sh
+
+      - name: Build x264
+        run: |
+          chmod +x scripts/build-x264-macos.sh
+          ./scripts/build-x264-macos.sh
 
       - name: Build FFmpeg
         run: |
@@ -111,6 +121,11 @@ jobs:
         run: |
           chmod +x scripts/build-x265-windows.sh
           ./scripts/build-x265-windows.sh
+          
+      - name: Build x264
+        run: |
+          chmod +x scripts/build-x264-windows.sh
+          ./scripts/build-x264-windows.sh
 
       - name: Build FFmpeg
         run: |
