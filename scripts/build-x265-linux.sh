@@ -32,5 +32,22 @@ cmake --build . -j$JOBS
 echo "Installing x265..."
 cmake --install .
 
+echo "Creating pkg-config file for x265..."
+mkdir -p "$PREFIX/lib/pkgconfig"
+cat > "$PREFIX/lib/pkgconfig/x265.pc" << 'EOF'
+prefix=__PREFIX__
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: x265
+Description: H.265/HEVC encoder
+Version: 1.0
+Libs: -L${libdir} -lx265
+Cflags: -I${includedir}
+EOF
+
+sed -i "s|__PREFIX__|$PREFIX|g" "$PREFIX/lib/pkgconfig/x265.pc"
+
 echo "=== x265 build complete ==="
 ls -lh "$PREFIX/lib/"*x265* 2>/dev/null || true

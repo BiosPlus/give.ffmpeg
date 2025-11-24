@@ -130,6 +130,7 @@ jobs:
             mingw-w64-ucrt-x86_64-toolchain
             mingw-w64-ucrt-x86_64-nasm
             mingw-w64-ucrt-x86_64-yasm
+            mingw-w64-ucrt-x86_64-cmake
             make
             git
             diffutils
