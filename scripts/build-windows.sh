@@ -33,6 +33,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --disable-shared \
     --enable-static \
     --enable-libx264 \
+    --enable-libx265 \
     --enable-libvpx \
     --enable-libsvtav1 \
     --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic -I$PREFIX/include" \
@@ -85,6 +86,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-decoder=mjpeg \
     \
     --enable-encoder=libx264 \
+    --enable-encoder=libx265 \
     --enable-encoder=libvpx_vp8 \
     --enable-encoder=libvpx_vp9 \
     --enable-encoder=libsvtav1 \
