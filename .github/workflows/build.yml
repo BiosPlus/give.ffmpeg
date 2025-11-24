@@ -31,6 +31,11 @@ jobs:
           chmod +x scripts/build-x264-linux.sh
           ./scripts/build-x264-linux.sh
 
+      - name: Build libvpx
+        run: |
+          chmod +x scripts/build-libvpx-linux.sh
+          ./scripts/build-libvpx-linux.sh
+
       - name: Build FFmpeg
         run: |
           chmod +x scripts/build-linux.sh
@@ -63,6 +68,11 @@ jobs:
         run: |
           chmod +x scripts/build-x264-macos.sh
           ./scripts/build-x264-macos.sh
+
+      - name: Build libvpx
+        run: |
+          chmod +x scripts/build-libvpx-macos.sh
+          ./scripts/build-libvpx-macos.sh
 
       - name: Build FFmpeg
         run: |
@@ -109,6 +119,11 @@ jobs:
         run: |
           chmod +x scripts/build-x264-windows.sh
           ./scripts/build-x264-windows.sh
+
+      - name: Build libvpx
+        run: |
+          chmod +x scripts/build-libvpx-windows.sh
+          ./scripts/build-libvpx-windows.sh
 
       - name: Build FFmpeg
         run: |
