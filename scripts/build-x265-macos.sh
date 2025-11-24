@@ -10,7 +10,10 @@ JOBS=$(sysctl -n hw.ncpu)
 # Build x265 from source
 echo "Cloning x265..."
 git clone --depth 1 https://bitbucket.org/multicoreware/x265_git.git x265-src
-cd x265-src/build/macos
+cd x265-src
+
+mkdir -p build
+cd build
 
 echo "Configuring x265..."
 cmake \
@@ -21,7 +24,7 @@ cmake \
     -DENABLE_PIC=ON \
     -DCMAKE_C_FLAGS="-O3 -mcpu=apple-m1" \
     -DCMAKE_CXX_FLAGS="-O3 -mcpu=apple-m1" \
-    ../../source
+    ../source
 
 echo "Building x265 with $JOBS jobs..."
 cmake --build . -j$JOBS
