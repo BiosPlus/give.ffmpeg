@@ -35,6 +35,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-pic \
     --enable-libx264 \
     --enable-libvpx \
+    --enable-libsvtav1 \
     --extra-cflags="-O3 -mcpu=apple-m1 -I$PREFIX/include" \
     --extra-ldflags="-L$PREFIX/lib" \
     \
@@ -87,6 +88,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-encoder=libx264 \
     --enable-encoder=libvpx_vp8 \
     --enable-encoder=libvpx_vp9 \
+    --enable-encoder=libsvtav1 \
     --enable-encoder=png \
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \
