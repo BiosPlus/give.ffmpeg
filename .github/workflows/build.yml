@@ -46,6 +46,16 @@ jobs:
           chmod +x scripts/build-svt-av1-linux.sh
           ./scripts/build-svt-av1-linux.sh
 
+      - name: Build libfdk-aac
+        run: |
+          chmod +x scripts/build-libfdk-aac-linux.sh
+          ./scripts/build-libfdk-aac-linux.sh
+
+      - name: Build libopus
+        run: |
+          chmod +x scripts/build-libopus-linux.sh
+          ./scripts/build-libopus-linux.sh
+
       - name: Build FFmpeg
         run: |
           chmod +x scripts/build-linux.sh
@@ -93,6 +103,16 @@ jobs:
         run: |
           chmod +x scripts/build-svt-av1-macos.sh
           ./scripts/build-svt-av1-macos.sh
+
+      - name: Build libfdk-aac
+        run: |
+          chmod +x scripts/build-libfdk-aac-macos.sh
+          ./scripts/build-libfdk-aac-macos.sh
+
+      - name: Build libopus
+        run: |
+          chmod +x scripts/build-libopus-macos.sh
+          ./scripts/build-libopus-macos.sh
 
       - name: Build FFmpeg
         run: |
@@ -155,6 +175,16 @@ jobs:
         run: |
           chmod +x scripts/build-svt-av1-windows.sh
           ./scripts/build-svt-av1-windows.sh
+
+      - name: Build libfdk-aac
+        run: |
+          chmod +x scripts/build-libfdk-aac-windows.sh
+          ./scripts/build-libfdk-aac-windows.sh
+
+      - name: Build libopus
+        run: |
+          chmod +x scripts/build-libopus-windows.sh
+          ./scripts/build-libopus-windows.sh
 
       - name: Build FFmpeg
         run: |
