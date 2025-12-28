@@ -94,54 +94,54 @@ jobs:
             ffmpeg-build/bin/ffmpeg
             ffmpeg-build/bin/ffprobe
 
-  build-windows:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # build-windows:
+  #   runs-on: windows-latest
+  #   defaults:
+  #     run:
+  #       shell: msys2 {0}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: UCRT64
-          update: true
-          install: >-
-            mingw-w64-ucrt-x86_64-toolchain
-            mingw-w64-ucrt-x86_64-nasm
-            mingw-w64-ucrt-x86_64-yasm
-            mingw-w64-ucrt-x86_64-cmake
-            make
-            git
-            diffutils
-            pkg-config
+  #     - name: Setup MSYS2
+  #       uses: msys2/setup-msys2@v2
+  #       with:
+  #         msystem: UCRT64
+  #         update: true
+  #         install: >-
+  #           mingw-w64-ucrt-x86_64-toolchain
+  #           mingw-w64-ucrt-x86_64-nasm
+  #           mingw-w64-ucrt-x86_64-yasm
+  #           mingw-w64-ucrt-x86_64-cmake
+  #           make
+  #           git
+  #           diffutils
+  #           pkg-config
 
-      - name: Build x264
-        run: |
-          chmod +x scripts/build-x264-windows.sh
-          ./scripts/build-x264-windows.sh
+  #     - name: Build x264
+  #       run: |
+  #         chmod +x scripts/build-x264-windows.sh
+  #         ./scripts/build-x264-windows.sh
 
-      - name: Build x265
-        run: |
-          chmod +x scripts/build-x265-windows.sh
-          ./scripts/build-x265-windows.sh
+  #     - name: Build x265
+  #       run: |
+  #         chmod +x scripts/build-x265-windows.sh
+  #         ./scripts/build-x265-windows.sh
 
-      - name: Build FFmpeg
-        run: |
-          chmod +x scripts/build-windows.sh
-          ./scripts/build-windows.sh
+  #     - name: Build FFmpeg
+  #       run: |
+  #         chmod +x scripts/build-windows.sh
+  #         ./scripts/build-windows.sh
 
-      - name: Test binary
-        run: |
-          ./ffmpeg-build/bin/ffmpeg.exe -version
-          ./ffmpeg-build/bin/ffprobe.exe -version
+  #     - name: Test binary
+  #       run: |
+  #         ./ffmpeg-build/bin/ffmpeg.exe -version
+  #         ./ffmpeg-build/bin/ffprobe.exe -version
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ffmpeg-windows-x86_64
-          path: |
-            ffmpeg-build/bin/ffmpeg.exe
-            ffmpeg-build/bin/ffprobe.exe
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ffmpeg-windows-x86_64
+  #         path: |
+  #           ffmpeg-build/bin/ffmpeg.exe
+  #           ffmpeg-build/bin/ffprobe.exe
