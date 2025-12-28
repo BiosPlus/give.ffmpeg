@@ -34,6 +34,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-static \
     --enable-pic \
     --enable-libx264 \
+    --enable-libx265 \
     --extra-cflags="-O3 -mcpu=apple-m1 -I$PREFIX/include" \
     --extra-ldflags="-L$PREFIX/lib" \
     \
@@ -84,6 +85,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-decoder=mjpeg \
     \
     --enable-encoder=libx264 \
+    --enable-encoder=libx265 \
     --enable-encoder=png \
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \
