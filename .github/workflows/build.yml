@@ -419,6 +419,9 @@ jobs:
   build-ffmpeg:
     runs-on: ubuntu-latest
     needs: [build-x264, build-opus, build-aom, build-vpx, build-svtav1, build-fdk-aac]
+    permissions:
+      actions: write  # Required to delete artifacts on failure
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
