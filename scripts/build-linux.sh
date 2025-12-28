@@ -17,6 +17,17 @@ cd ffmpeg-src
 echo "Configuring FFmpeg..."
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
 
+# Debug pkg-config
+echo "=== Debug: PKG_CONFIG_PATH ==="
+echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
+echo "=== Checking for x265 via pkg-config ==="
+pkg-config --exists x265 && echo "x265 found" || echo "x265 NOT found"
+pkg-config --modversion x265 || echo "Cannot get x265 version"
+pkg-config --cflags x265 || echo "Cannot get x265 cflags"
+pkg-config --libs x265 || echo "Cannot get x265 libs"
+pkg-config --static --libs x265 || echo "Cannot get x265 static libs"
+echo "=== End debug ==="
+
 ./configure \
     --prefix="$PREFIX" \
     --pkg-config-flags="--static" \
