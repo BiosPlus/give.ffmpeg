@@ -19,6 +19,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 ./configure \
     --prefix="$PREFIX" \
+    --pkg-config-flags="--static" \
     --enable-gpl \
     --enable-nonfree \
     --enable-version3 \
