@@ -28,6 +28,7 @@ pkg-config --libs x265 || echo "Cannot get x265 libs"
 pkg-config --static --libs x265 || echo "Cannot get x265 static libs"
 echo "=== End debug ==="
 
+# Try configure
 ./configure \
     --prefix="$PREFIX" \
     --pkg-config-flags="--static" \
@@ -135,6 +136,17 @@ echo "=== End debug ==="
     --enable-filter=format \
     --enable-filter=aformat \
     --enable-filter=fps
+
+# If configure failed, show the config.log
+if [ $? -ne 0 ]; then
+    echo "=== CONFIGURE FAILED - Showing relevant parts of config.log ==="
+    echo "=== Searching for x265 related errors ==="
+    grep -A 20 "check_pkg_config x265" ffbuild/config.log || true
+    grep -A 10 "ERROR: x265" ffbuild/config.log || true
+    echo "=== Last 100 lines of config.log ==="
+    tail -100 ffbuild/config.log
+    exit 1
+fi
 
 # Build
 echo "Building FFmpeg with $JOBS jobs..."
