@@ -109,13 +109,12 @@ The `build-ffmpeg` job:
 3. Merges artifacts into single `ffmpeg-build/` directory
 4. Configures FFmpeg to use pre-built libraries via PKG_CONFIG_PATH
 5. Builds and uploads final FFmpeg binaries
-6. **On failure**: Deletes all newly-created library artifacts to prevent storing broken builds
+6. **On failure**: Deletes all library artifacts to force complete rebuild on next run
 
 ### Artifact Cleanup Strategy
 - **Successful library build**: Artifact uploaded with 90-day retention
 - **Failed library build**: No artifact uploaded (build stops with error)
-- **Failed FFmpeg build**: All library artifacts from current run are deleted
-- **Cached artifacts**: Never deleted, even on FFmpeg build failure
+- **Failed FFmpeg build**: All library artifacts are deleted (both cached and newly-built)
 
 **Benefits:**
 - Libraries build concurrently instead of sequentially

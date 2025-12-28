@@ -508,66 +508,43 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          echo "FFmpeg build failed - cleaning up library artifacts from this run..."
+          echo "FFmpeg build failed - deleting all library artifacts to force full rebuild..."
 
-          # Only delete artifacts if they were built in this run (not from cache)
-          ARTIFACTS_TO_DELETE=""
+          # Collect all library artifact names (regardless of cache status)
+          ARTIFACTS_TO_DELETE="${{ needs.build-x264.outputs.artifact-name }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-opus.outputs.artifact-name }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-aom.outputs.artifact-name }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-vpx.outputs.artifact-name }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-svtav1.outputs.artifact-name }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-fdk-aac.outputs.artifact-name }}"
 
-          if [ "${{ needs.build-x264.outputs.cache-hit }}" != "true" ]; then
-            ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-x264.outputs.artifact-name }}"
-          fi
+          echo "Deleting artifacts: $ARTIFACTS_TO_DELETE"
+          DELETED=0
+          FAILED=0
 
-          if [ "${{ needs.build-opus.outputs.cache-hit }}" != "true" ]; then
-            ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-opus.outputs.artifact-name }}"
-          fi
+          for artifact in $ARTIFACTS_TO_DELETE; do
+            echo "Attempting to delete artifact: $artifact"
 
-          if [ "${{ needs.build-aom.outputs.cache-hit }}" != "true" ]; then
-            ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-aom.outputs.artifact-name }}"
-          fi
+            # Get artifact ID with error handling
+            ARTIFACT_ID=$(gh api "/repos/${{ github.repository }}/actions/artifacts?name=$artifact" 2>/dev/null | jq -r '.artifacts[0].id // empty' 2>/dev/null || echo "")
 
-          if [ "${{ needs.build-vpx.outputs.cache-hit }}" != "true" ]; then
-            ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-vpx.outputs.artifact-name }}"
-          fi
-
-          if [ "${{ needs.build-svtav1.outputs.cache-hit }}" != "true" ]; then
-            ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-svtav1.outputs.artifact-name }}"
-          fi
-
-          if [ "${{ needs.build-fdk-aac.outputs.cache-hit }}" != "true" ]; then
-            ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-fdk-aac.outputs.artifact-name }}"
-          fi
-
-          if [ -n "$ARTIFACTS_TO_DELETE" ]; then
-            echo "Deleting artifacts: $ARTIFACTS_TO_DELETE"
-            DELETED=0
-            FAILED=0
-
-            for artifact in $ARTIFACTS_TO_DELETE; do
-              echo "Attempting to delete artifact: $artifact"
-
-              # Get artifact ID with error handling
-              ARTIFACT_ID=$(gh api "/repos/${{ github.repository }}/actions/artifacts?name=$artifact" 2>/dev/null | jq -r '.artifacts[0].id // empty' 2>/dev/null || echo "")
-
-              if [ -n "$ARTIFACT_ID" ] && [ "$ARTIFACT_ID" != "null" ]; then
-                echo "  Found artifact ID: $ARTIFACT_ID"
-                if gh api --method DELETE \
-                  -H "Accept: application/vnd.github+json" \
-                  -H "X-GitHub-Api-Version: 2022-11-28" \
-                  "/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID" 2>/dev/null; then
-                  echo "  ✓ Successfully deleted: $artifact"
-                  DELETED=$((DELETED + 1))
-                else
-                  echo "  ✗ Failed to delete: $artifact (API call failed)"
-                  FAILED=$((FAILED + 1))
-                fi
+            if [ -n "$ARTIFACT_ID" ] && [ "$ARTIFACT_ID" != "null" ]; then
+              echo "  Found artifact ID: $ARTIFACT_ID"
+              if gh api --method DELETE \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID" 2>/dev/null; then
+                echo "  ✓ Successfully deleted: $artifact"
+                DELETED=$((DELETED + 1))
               else
-                echo "  ✗ Failed to delete: $artifact (artifact not found or already deleted)"
+                echo "  ✗ Failed to delete: $artifact (API call failed)"
                 FAILED=$((FAILED + 1))
               fi
-            done
+            else
+              echo "  ✗ Failed to delete: $artifact (artifact not found or already deleted)"
+              FAILED=$((FAILED + 1))
+            fi
+          done
 
-            echo ""
-            echo "Cleanup summary: $DELETED deleted, $FAILED failed"
-          else
-            echo "No new artifacts to delete (all were from cache)"
-          fi
+          echo ""
+          echo "Cleanup summary: $DELETED deleted, $FAILED failed"
