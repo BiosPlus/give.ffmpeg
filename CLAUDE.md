@@ -67,6 +67,38 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 └── README.md                       # User-facing documentation
 ```
 
+## Build Architecture
+
+The build process uses **parallel GitHub Actions jobs** to minimize total build time:
+
+### Parallel Library Builds (5 jobs)
+Each codec library builds independently on its own runner:
+- `build-x264`: H.264 encoder
+- `build-opus`: Opus audio codec
+- `build-aom`: AOM AV1 codec
+- `build-vpx`: libvpx VP8/VP9 codec
+- `build-svtav1`: SVT-AV1 fast AV1 encoder
+
+Each job:
+1. Installs only required dependencies
+2. Builds the library from source
+3. Uploads the build artifacts (includes, libs, pkg-config)
+4. Artifacts retained for 1 day
+
+### Final FFmpeg Build (1 job)
+The `build-ffmpeg` job:
+1. Depends on all 5 library jobs (waits for completion)
+2. Downloads all library artifacts
+3. Merges artifacts into single `ffmpeg-build/` directory
+4. Configures FFmpeg to use pre-built libraries via PKG_CONFIG_PATH
+5. Builds and uploads final FFmpeg binaries
+
+**Benefits:**
+- Libraries build concurrently instead of sequentially
+- ~3x faster total build time (5-7 mins vs 15-20 mins)
+- Each job has minimal dependencies
+- Easy to add new codecs as additional parallel jobs
+
 ## Development Commands
 
 ```bash
