@@ -8,8 +8,90 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
+  build-x264:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            nasm \
+            git
+
+      - name: Build x264
+        run: |
+          chmod +x scripts/build-x264-linux.sh
+          ./scripts/build-x264-linux.sh
+
+      - name: Upload x264 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: x264-build
+          path: ffmpeg-build/
+          retention-days: 1
+
+  build-opus:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            autoconf \
+            automake \
+            libtool \
+            git
+
+      - name: Build libopus
+        run: |
+          chmod +x scripts/build-opus-linux.sh
+          ./scripts/build-opus-linux.sh
+
+      - name: Upload libopus artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: opus-build
+          path: ffmpeg-build/
+          retention-days: 1
+
+  build-aom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            nasm \
+            git
+
+      - name: Build libaom
+        run: |
+          chmod +x scripts/build-aom-linux.sh
+          ./scripts/build-aom-linux.sh
+
+      - name: Upload libaom artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aom-build
+          path: ffmpeg-build/
+          retention-days: 1
+
+  build-ffmpeg:
+    runs-on: ubuntu-latest
+    needs: [build-x264, build-opus, build-aom]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,24 +105,37 @@ jobs:
             yasm \
             pkg-config \
             git \
-            cmake \
             libssl-dev \
             zlib1g-dev
 
-      - name: Build x264
-        run: |
-          chmod +x scripts/build-x264-linux.sh
-          ./scripts/build-x264-linux.sh
+      - name: Download x264 build
+        uses: actions/download-artifact@v4
+        with:
+          name: x264-build
+          path: ffmpeg-build/
 
-      - name: Build libopus
-        run: |
-          chmod +x scripts/build-opus-linux.sh
-          ./scripts/build-opus-linux.sh
+      - name: Download libopus build
+        uses: actions/download-artifact@v4
+        with:
+          name: opus-build
+          path: ffmpeg-build/
 
-      - name: Build libaom
+      - name: Download libaom build
+        uses: actions/download-artifact@v4
+        with:
+          name: aom-build
+          path: ffmpeg-build/
+
+      - name: Verify downloaded libraries
         run: |
-          chmod +x scripts/build-aom-linux.sh
-          ./scripts/build-aom-linux.sh
+          echo "=== Downloaded library files ==="
+          ls -lah ffmpeg-build/
+          echo "=== Library directory ==="
+          ls -lah ffmpeg-build/lib/ || true
+          echo "=== Include directory ==="
+          ls -lah ffmpeg-build/include/ || true
+          echo "=== pkg-config files ==="
+          ls -lah ffmpeg-build/lib/pkgconfig/ || true
 
       - name: Build FFmpeg
         run: |
@@ -52,7 +147,7 @@ jobs:
           ./ffmpeg-build/bin/ffmpeg -version
           ./ffmpeg-build/bin/ffprobe -version
 
-      - name: Upload artifacts
+      - name: Upload FFmpeg artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ffmpeg-linux-x86_64
