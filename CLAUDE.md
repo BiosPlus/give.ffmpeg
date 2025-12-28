@@ -22,7 +22,7 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 - Essential demuxers/muxers (mp4, mkv, webm, mov)
 - Common video codecs:
   - Decoding: h264, hevc, vp8, vp9, av1
-  - Encoding: libx264 (H.264), libvpx (VP8/VP9), libaom (AV1)
+  - Encoding: libx264 (H.264), libvpx (VP8/VP9), libaom (AV1), SVT-AV1 (fast AV1)
 - Common audio codecs:
   - Decoding: aac, mp3, opus, flac, vorbis
   - Encoding: libopus
@@ -61,7 +61,8 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 │   ├── build-x264-linux.sh         # x264 encoder build script
 │   ├── build-opus-linux.sh         # Opus audio codec build script
 │   ├── build-aom-linux.sh          # AOM AV1 codec build script
-│   └── build-vpx-linux.sh          # libvpx VP8/VP9 codec build script
+│   ├── build-vpx-linux.sh          # libvpx VP8/VP9 codec build script
+│   └── build-svtav1-linux.sh       # SVT-AV1 fast AV1 encoder build script
 ├── CLAUDE.md                       # This file
 └── README.md                       # User-facing documentation
 ```
@@ -82,11 +83,12 @@ git push origin <branch>
 2. **libopus**: Opus audio codec
 3. **libaom**: AV1 video codec for encoding and decoding
 4. **libvpx**: VP8/VP9 video codec with high bitdepth support
+5. **SVT-AV1**: High-performance AV1 encoder optimized for speed
 
 ## Future Enhancements
 
 - Hardware acceleration (VAAPI, NVENC, QSV)
-- Additional codecs (x265, svt-av1)
+- Additional codecs (x265, libwebp)
 - Release automation
 - Binary size optimization
 - AppImage or container distribution
