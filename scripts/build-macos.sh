@@ -49,6 +49,7 @@ echo "=== End debug ==="
     --enable-libx265 \
     --extra-cflags="-O3 -mcpu=apple-m1 -I$PREFIX/include" \
     --extra-ldflags="-L$PREFIX/lib" \
+    --extra-libs="-lstdc++" \
     \
     --disable-everything \
     \
