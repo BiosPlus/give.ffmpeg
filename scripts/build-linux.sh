@@ -39,6 +39,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-libaom \
     --enable-libvpx \
     --enable-libsvtav1 \
+    --enable-libfdk-aac \
     --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic -I$PREFIX/include" \
     --extra-ldflags="-static -L$PREFIX/lib" \
     \
@@ -94,6 +95,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-encoder=libvpx_vp8 \
     --enable-encoder=libvpx_vp9 \
     --enable-encoder=libsvtav1 \
+    --enable-encoder=libfdk_aac \
     --enable-encoder=png \
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \

@@ -347,9 +347,78 @@ jobs:
           path: ffmpeg-build/
           retention-days: 90
 
+  build-fdk-aac:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.setup.outputs.artifact-name }}
+      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            autoconf \
+            automake \
+            libtool \
+            git
+
+      - name: Get libfdk-aac commit hash
+        id: setup
+        run: |
+          echo "Getting libfdk-aac latest commit hash..."
+          git clone --depth 1 https://github.com/mstorsjo/fdk-aac.git fdk-aac-temp
+          cd fdk-aac-temp
+          COMMIT_HASH=$(git rev-parse HEAD)
+          echo "libfdk-aac commit: $COMMIT_HASH"
+          echo "artifact-name=fdk-aac-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=fdk-aac-build-$COMMIT_HASH" >> $GITHUB_ENV
+          cd ..
+          rm -rf fdk-aac-temp
+
+      - name: Try to download cached artifact
+        id: download-cache
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          workflow: build.yml
+          path: ffmpeg-build/
+          search_artifacts: true
+          if_no_artifact_found: ignore
+
+      - name: Check if artifact was actually downloaded
+        id: check-cache
+        run: |
+          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
+            echo "Cache hit - artifact was downloaded"
+            echo "hit=true" >> $GITHUB_OUTPUT
+          else
+            echo "Cache miss - artifact not found"
+            echo "hit=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build libfdk-aac
+        if: steps.check-cache.outputs.hit != 'true'
+        run: |
+          echo "Cache miss - building libfdk-aac from source..."
+          chmod +x scripts/build-fdk-aac-linux.sh
+          ./scripts/build-fdk-aac-linux.sh
+
+      - name: Upload libfdk-aac artifact
+        if: success() && steps.check-cache.outputs.hit != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ffmpeg-build/
+          retention-days: 90
+
   build-ffmpeg:
     runs-on: ubuntu-latest
-    needs: [build-x264, build-opus, build-aom, build-vpx, build-svtav1]
+    needs: [build-x264, build-opus, build-aom, build-vpx, build-svtav1, build-fdk-aac]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -394,6 +463,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build-svtav1.outputs.artifact-name }}
+          path: ffmpeg-build/
+
+      - name: Download libfdk-aac build
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build-fdk-aac.outputs.artifact-name }}
           path: ffmpeg-build/
 
       - name: Verify downloaded libraries
@@ -456,6 +531,10 @@ jobs:
 
           if [ "${{ needs.build-svtav1.outputs.cache-hit }}" != "true" ]; then
             ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-svtav1.outputs.artifact-name }}"
+          fi
+
+          if [ "${{ needs.build-fdk-aac.outputs.cache-hit }}" != "true" ]; then
+            ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-fdk-aac.outputs.artifact-name }}"
           fi
 
           if [ -n "$ARTIFACTS_TO_DELETE" ]; then
