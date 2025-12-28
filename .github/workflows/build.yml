@@ -31,6 +31,11 @@ jobs:
           chmod +x scripts/build-x264-linux.sh
           ./scripts/build-x264-linux.sh
 
+      - name: Build libopus
+        run: |
+          chmod +x scripts/build-opus-linux.sh
+          ./scripts/build-opus-linux.sh
+
       - name: Build FFmpeg
         run: |
           chmod +x scripts/build-linux.sh
@@ -63,6 +68,11 @@ jobs:
         run: |
           chmod +x scripts/build-x264-macos.sh
           ./scripts/build-x264-macos.sh
+
+      - name: Build libopus
+        run: |
+          chmod +x scripts/build-opus-macos.sh
+          ./scripts/build-opus-macos.sh
 
       - name: Build FFmpeg
         run: |
@@ -109,6 +119,11 @@ jobs:
         run: |
           chmod +x scripts/build-x264-windows.sh
           ./scripts/build-x264-windows.sh
+
+      - name: Build libopus
+        run: |
+          chmod +x scripts/build-opus-windows.sh
+          ./scripts/build-opus-windows.sh
 
       - name: Build FFmpeg
         run: |
