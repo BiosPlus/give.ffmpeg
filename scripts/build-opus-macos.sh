@@ -16,13 +16,13 @@ echo "Running autogen.sh..."
 ./autogen.sh
 
 echo "Configuring libopus..."
+CFLAGS="-O3 -mcpu=apple-m1" \
 ./configure \
     --prefix="$PREFIX" \
     --disable-shared \
     --enable-static \
     --disable-doc \
-    --disable-extra-programs \
-    --extra-cflags="-O3 -mcpu=apple-m1"
+    --disable-extra-programs
 
 echo "Building libopus with $JOBS jobs..."
 make -j$JOBS
