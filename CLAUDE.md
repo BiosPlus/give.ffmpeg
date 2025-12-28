@@ -2,13 +2,11 @@
 
 ## Project Overview
 
-Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for multiple platforms with maximum performance optimization.
+Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linux with maximum performance optimization.
 
-## Target Platforms
+## Target Platform
 
 - **Linux** (ubuntu-latest): x86_64
-- **macOS** (macos-latest): ARM64 (Apple Silicon)
-- **Windows** (windows-latest): x86_64
 
 ## Build Philosophy
 
@@ -22,8 +20,12 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for mult
 ### Enabled Components
 - Core FFmpeg tools (ffmpeg, ffprobe)
 - Essential demuxers/muxers (mp4, mkv, webm, mov)
-- Common video codecs (h264, hevc, vp8, vp9, av1 - decode only)
-- Common audio codecs (aac, mp3, opus, flac, vorbis)
+- Common video codecs:
+  - Decoding: h264, hevc, vp8, vp9, av1
+  - Encoding: libx264 (H.264), libaom (AV1)
+- Common audio codecs:
+  - Decoding: aac, mp3, opus, flac, vorbis
+  - Encoding: libopus
 - Essential filters (scale, crop, overlay)
 
 ### Disabled Components
@@ -53,13 +55,14 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for mult
 .
 ├── .github/
 │   └── workflows/
-│       └── build.yml          # Main CI workflow
+│       └── build.yml               # Main CI workflow
 ├── scripts/
-│   ├── build-linux.sh         # Linux build script
-│   ├── build-macos.sh         # macOS build script
-│   └── build-windows.sh       # Windows build script
-├── CLAUDE.md                  # This file
-└── README.md                  # User-facing documentation
+│   ├── build-linux.sh              # FFmpeg build script
+│   ├── build-x264-linux.sh         # x264 encoder build script
+│   ├── build-opus-linux.sh         # Opus audio codec build script
+│   └── build-aom-linux.sh          # AOM AV1 codec build script
+├── CLAUDE.md                       # This file
+└── README.md                       # User-facing documentation
 ```
 
 ## Development Commands
@@ -72,17 +75,16 @@ docker run --rm -v $(pwd):/work -w /work ubuntu:22.04 bash scripts/build-linux.s
 git push origin <branch>
 ```
 
-## Next Steps
+## Built-from-Source Libraries
 
-1. Create GitHub Actions workflow
-2. Implement platform-specific build scripts
-3. Add artifact upload for built binaries
-4. Verify builds complete successfully on all platforms
+1. **libx264**: H.264 encoder (GPL)
+2. **libopus**: Opus audio codec
+3. **libaom**: AV1 video codec for encoding and decoding
 
 ## Future Enhancements
 
-- Hardware acceleration (NVENC, QSV, VideoToolbox, AMF)
-- Additional codecs (x264, x265, svt-av1 encoding)
-- Cross-compilation support
+- Hardware acceleration (VAAPI, NVENC, QSV)
+- Additional codecs (x265, svt-av1)
 - Release automation
 - Binary size optimization
+- AppImage or container distribution

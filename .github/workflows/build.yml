@@ -23,6 +23,7 @@ jobs:
             yasm \
             pkg-config \
             git \
+            cmake \
             libssl-dev \
             zlib1g-dev
 
@@ -35,6 +36,11 @@ jobs:
         run: |
           chmod +x scripts/build-opus-linux.sh
           ./scripts/build-opus-linux.sh
+
+      - name: Build libaom
+        run: |
+          chmod +x scripts/build-aom-linux.sh
+          ./scripts/build-aom-linux.sh
 
       - name: Build FFmpeg
         run: |

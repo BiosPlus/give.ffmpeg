@@ -36,6 +36,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-pic \
     --enable-libx264 \
     --enable-libopus \
+    --enable-libaom \
     --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic -I$PREFIX/include" \
     --extra-ldflags="-static -L$PREFIX/lib" \
     \
@@ -87,6 +88,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     \
     --enable-encoder=libx264 \
     --enable-encoder=libopus \
+    --enable-encoder=libaom_av1 \
     --enable-encoder=png \
     --enable-encoder=mjpeg \
     --enable-encoder=pcm_s16le \
