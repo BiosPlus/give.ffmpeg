@@ -31,3 +31,7 @@ make install
 
 echo "=== x265 build complete ==="
 ls -lh "$PREFIX/lib/"*x265* 2>/dev/null || true
+echo "Checking for x265.pc..."
+ls -lh "$PREFIX/lib/pkgconfig/x265.pc" 2>/dev/null || echo "WARNING: x265.pc not found!"
+export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
+pkg-config --modversion x265 || echo "WARNING: pkg-config cannot find x265"
