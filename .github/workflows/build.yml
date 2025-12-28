@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.download-cache.outcome == 'success' }}
+      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,15 +49,26 @@ jobs:
           search_artifacts: true
           if_no_artifact_found: ignore
 
+      - name: Check if artifact was actually downloaded
+        id: check-cache
+        run: |
+          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
+            echo "Cache hit - artifact was downloaded"
+            echo "hit=true" >> $GITHUB_OUTPUT
+          else
+            echo "Cache miss - artifact not found"
+            echo "hit=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build x264
-        if: steps.download-cache.outcome != 'success'
+        if: steps.check-cache.outputs.hit != 'true'
         run: |
           echo "Cache miss - building x264 from source..."
           chmod +x scripts/build-x264-linux.sh
           ./scripts/build-x264-linux.sh
 
       - name: Upload x264 artifact
-        if: success() && steps.download-cache.outcome != 'success'
+        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
@@ -68,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.download-cache.outcome == 'success' }}
+      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -107,15 +118,26 @@ jobs:
           search_artifacts: true
           if_no_artifact_found: ignore
 
+      - name: Check if artifact was actually downloaded
+        id: check-cache
+        run: |
+          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
+            echo "Cache hit - artifact was downloaded"
+            echo "hit=true" >> $GITHUB_OUTPUT
+          else
+            echo "Cache miss - artifact not found"
+            echo "hit=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build libopus
-        if: steps.download-cache.outcome != 'success'
+        if: steps.check-cache.outputs.hit != 'true'
         run: |
           echo "Cache miss - building libopus from source..."
           chmod +x scripts/build-opus-linux.sh
           ./scripts/build-opus-linux.sh
 
       - name: Upload libopus artifact
-        if: success() && steps.download-cache.outcome != 'success'
+        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
@@ -126,7 +148,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.download-cache.outcome == 'success' }}
+      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -164,15 +186,26 @@ jobs:
           search_artifacts: true
           if_no_artifact_found: ignore
 
+      - name: Check if artifact was actually downloaded
+        id: check-cache
+        run: |
+          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
+            echo "Cache hit - artifact was downloaded"
+            echo "hit=true" >> $GITHUB_OUTPUT
+          else
+            echo "Cache miss - artifact not found"
+            echo "hit=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build libaom
-        if: steps.download-cache.outcome != 'success'
+        if: steps.check-cache.outputs.hit != 'true'
         run: |
           echo "Cache miss - building libaom from source..."
           chmod +x scripts/build-aom-linux.sh
           ./scripts/build-aom-linux.sh
 
       - name: Upload libaom artifact
-        if: success() && steps.download-cache.outcome != 'success'
+        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
@@ -183,7 +216,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.download-cache.outcome == 'success' }}
+      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -220,15 +253,26 @@ jobs:
           search_artifacts: true
           if_no_artifact_found: ignore
 
+      - name: Check if artifact was actually downloaded
+        id: check-cache
+        run: |
+          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
+            echo "Cache hit - artifact was downloaded"
+            echo "hit=true" >> $GITHUB_OUTPUT
+          else
+            echo "Cache miss - artifact not found"
+            echo "hit=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build libvpx
-        if: steps.download-cache.outcome != 'success'
+        if: steps.check-cache.outputs.hit != 'true'
         run: |
           echo "Cache miss - building libvpx from source..."
           chmod +x scripts/build-vpx-linux.sh
           ./scripts/build-vpx-linux.sh
 
       - name: Upload libvpx artifact
-        if: success() && steps.download-cache.outcome != 'success'
+        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
@@ -239,7 +283,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.download-cache.outcome == 'success' }}
+      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -277,15 +321,26 @@ jobs:
           search_artifacts: true
           if_no_artifact_found: ignore
 
+      - name: Check if artifact was actually downloaded
+        id: check-cache
+        run: |
+          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
+            echo "Cache hit - artifact was downloaded"
+            echo "hit=true" >> $GITHUB_OUTPUT
+          else
+            echo "Cache miss - artifact not found"
+            echo "hit=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build SVT-AV1
-        if: steps.download-cache.outcome != 'success'
+        if: steps.check-cache.outputs.hit != 'true'
         run: |
           echo "Cache miss - building SVT-AV1 from source..."
           chmod +x scripts/build-svtav1-linux.sh
           ./scripts/build-svtav1-linux.sh
 
       - name: Upload SVT-AV1 artifact
-        if: success() && steps.download-cache.outcome != 'success'
+        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
