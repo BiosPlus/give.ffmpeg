@@ -1,7 +1,24 @@
 #!/bin/bash
 set -e
 
-echo "=== Building FFmpeg for Linux x86_64 ==="
+# Detect architecture
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64)
+        ARCH_NAME="x86_64"
+        ARCH_FLAGS="-O3 -march=x86-64-v3 -mtune=generic"
+        ;;
+    aarch64|arm64)
+        ARCH_NAME="arm64"
+        ARCH_FLAGS="-O3 -march=armv8-a -mtune=generic"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
+
+echo "=== Building FFmpeg for Linux $ARCH_NAME ==="
 
 # Configuration
 FFMPEG_VERSION="master"
@@ -40,7 +57,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-libvpx \
     --enable-libsvtav1 \
     --enable-libfdk-aac \
-    --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic -I$PREFIX/include" \
+    --extra-cflags="$ARCH_FLAGS -I$PREFIX/include" \
     --extra-ldflags="-static -L$PREFIX/lib" \
     \
     --disable-everything \

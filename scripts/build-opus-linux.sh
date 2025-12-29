@@ -1,7 +1,24 @@
 #!/bin/bash
 set -e
 
-echo "=== Building libopus for Linux x86_64 ==="
+# Detect architecture
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64)
+        ARCH_NAME="x86_64"
+        ARCH_FLAGS="-O3 -march=x86-64-v3 -mtune=generic"
+        ;;
+    aarch64|arm64)
+        ARCH_NAME="arm64"
+        ARCH_FLAGS="-O3 -march=armv8-a -mtune=generic"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
+
+echo "=== Building libopus for Linux $ARCH_NAME ==="
 
 # Configuration
 PREFIX="$(pwd)/ffmpeg-build"
@@ -16,7 +33,7 @@ echo "Running autogen.sh..."
 ./autogen.sh
 
 echo "Configuring libopus..."
-CFLAGS="-O3 -march=x86-64-v3 -mtune=generic" \
+CFLAGS="$ARCH_FLAGS" \
 ./configure \
     --prefix="$PREFIX" \
     --disable-shared \

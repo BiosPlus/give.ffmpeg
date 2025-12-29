@@ -1,7 +1,22 @@
 #!/bin/bash
 set -e
 
-echo "=== Building SVT-AV1 for Linux x86_64 ==="
+# Detect architecture
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64)
+        ARCH_NAME="x86_64"
+        ;;
+    aarch64|arm64)
+        ARCH_NAME="arm64"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
+
+echo "=== Building SVT-AV1 for Linux $ARCH_NAME ==="
 
 # Configuration
 PREFIX="$(pwd)/ffmpeg-build"
