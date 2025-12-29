@@ -41,7 +41,7 @@ jobs:
       - name: Try to download cached artifact
         id: download-cache
         continue-on-error: true
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           name: ${{ env.ARTIFACT_NAME }}
           workflow: build.yml
@@ -110,7 +110,7 @@ jobs:
       - name: Try to download cached artifact
         id: download-cache
         continue-on-error: true
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           name: ${{ env.ARTIFACT_NAME }}
           workflow: build.yml
@@ -178,7 +178,7 @@ jobs:
       - name: Try to download cached artifact
         id: download-cache
         continue-on-error: true
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           name: ${{ env.ARTIFACT_NAME }}
           workflow: build.yml
@@ -245,7 +245,7 @@ jobs:
       - name: Try to download cached artifact
         id: download-cache
         continue-on-error: true
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           name: ${{ env.ARTIFACT_NAME }}
           workflow: build.yml
@@ -313,7 +313,7 @@ jobs:
       - name: Try to download cached artifact
         id: download-cache
         continue-on-error: true
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           name: ${{ env.ARTIFACT_NAME }}
           workflow: build.yml
@@ -382,7 +382,7 @@ jobs:
       - name: Try to download cached artifact
         id: download-cache
         continue-on-error: true
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           name: ${{ env.ARTIFACT_NAME }}
           workflow: build.yml
