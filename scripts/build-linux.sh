@@ -35,6 +35,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-static \
     --enable-pic \
     --enable-libx264 \
+    --enable-libx265 \
     --enable-libopus \
     --enable-libaom \
     --enable-libvpx \
@@ -42,6 +43,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-libfdk-aac \
     --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic -I$PREFIX/include" \
     --extra-ldflags="-static -L$PREFIX/lib" \
+    --extra-libs="-lpthread" \
     \
     --disable-everything \
     \
@@ -90,6 +92,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-decoder=mjpeg \
     \
     --enable-encoder=libx264 \
+    --enable-encoder=libx265 \
     --enable-encoder=libopus \
     --enable-encoder=libaom_av1 \
     --enable-encoder=libvpx_vp8 \

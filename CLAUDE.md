@@ -22,7 +22,7 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 - Essential demuxers/muxers (mp4, mkv, webm, mov)
 - Common video codecs:
   - Decoding: h264, hevc, vp8, vp9, av1
-  - Encoding: libx264 (H.264), libvpx (VP8/VP9), libaom (AV1), SVT-AV1 (fast AV1)
+  - Encoding: libx264 (H.264), libx265 (H.265/HEVC), libvpx (VP8/VP9), libaom (AV1), SVT-AV1 (fast AV1)
 - Common audio codecs:
   - Decoding: aac, mp3, opus, flac, vorbis
   - Encoding: libopus, libfdk-aac (AAC)
@@ -59,6 +59,7 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 ├── scripts/
 │   ├── build-linux.sh              # FFmpeg build script
 │   ├── build-x264-linux.sh         # x264 encoder build script
+│   ├── build-x265-linux.sh         # x265 H.265/HEVC encoder build script
 │   ├── build-opus-linux.sh         # Opus audio codec build script
 │   ├── build-aom-linux.sh          # AOM AV1 codec build script
 │   ├── build-vpx-linux.sh          # libvpx VP8/VP9 codec build script
@@ -72,9 +73,10 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 
 The build process uses **parallel GitHub Actions jobs** with **intelligent artifact caching** to minimize build time and resource usage:
 
-### Parallel Library Builds (6 jobs)
+### Parallel Library Builds (7 jobs)
 Each codec library builds independently on its own runner:
 - `build-x264`: H.264 encoder
+- `build-x265`: H.265/HEVC encoder
 - `build-opus`: Opus audio codec
 - `build-aom`: AOM AV1 codec
 - `build-vpx`: libvpx VP8/VP9 codec
@@ -104,7 +106,7 @@ This ensures that:
 
 ### Final FFmpeg Build (1 job)
 The `build-ffmpeg` job:
-1. Depends on all 6 library jobs (waits for completion)
+1. Depends on all 7 library jobs (waits for completion)
 2. Downloads all library artifacts (using dynamic artifact names from job outputs)
 3. Merges artifacts into single `ffmpeg-build/` directory
 4. Configures FFmpeg to use pre-built libraries via PKG_CONFIG_PATH
@@ -138,16 +140,17 @@ git push origin <branch>
 ## Built-from-Source Libraries
 
 1. **libx264**: H.264 encoder (GPL)
-2. **libopus**: Opus audio codec
-3. **libaom**: AV1 video codec for encoding and decoding
-4. **libvpx**: VP8/VP9 video codec with high bitdepth support
-5. **SVT-AV1**: High-performance AV1 encoder optimized for speed
-6. **libfdk-aac**: High-quality AAC audio encoder (requires --enable-nonfree)
+2. **libx265**: H.265/HEVC encoder (GPL)
+3. **libopus**: Opus audio codec
+4. **libaom**: AV1 video codec for encoding and decoding
+5. **libvpx**: VP8/VP9 video codec with high bitdepth support
+6. **SVT-AV1**: High-performance AV1 encoder optimized for speed
+7. **libfdk-aac**: High-quality AAC audio encoder (requires --enable-nonfree)
 
 ## Future Enhancements
 
 - Hardware acceleration (VAAPI, NVENC, QSV)
-- Additional codecs (x265, libwebp)
+- Additional codecs (libwebp)
 - Release automation
 - Binary size optimization
 - AppImage or container distribution
