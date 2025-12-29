@@ -43,7 +43,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
     --enable-libfdk-aac \
     --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic -I$PREFIX/include" \
     --extra-ldflags="-static -L$PREFIX/lib" \
-    --extra-libs="-lpthread" \
+    --extra-libs=-lpthread \
     \
     --disable-everything \
     \
