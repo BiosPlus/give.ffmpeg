@@ -25,7 +25,7 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
   - Encoding: libx264 (H.264), libvpx (VP8/VP9), libaom (AV1), SVT-AV1 (fast AV1)
 - Common audio codecs:
   - Decoding: aac, mp3, opus, flac, vorbis
-  - Encoding: libopus
+  - Encoding: libopus, libfdk-aac (AAC)
 - Essential filters (scale, crop, overlay)
 
 ### Disabled Components
@@ -62,7 +62,8 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 │   ├── build-opus-linux.sh         # Opus audio codec build script
 │   ├── build-aom-linux.sh          # AOM AV1 codec build script
 │   ├── build-vpx-linux.sh          # libvpx VP8/VP9 codec build script
-│   └── build-svtav1-linux.sh       # SVT-AV1 fast AV1 encoder build script
+│   ├── build-svtav1-linux.sh       # SVT-AV1 fast AV1 encoder build script
+│   └── build-fdk-aac-linux.sh      # libfdk-aac AAC audio encoder build script
 ├── CLAUDE.md                       # This file
 └── README.md                       # User-facing documentation
 ```
@@ -71,13 +72,14 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 
 The build process uses **parallel GitHub Actions jobs** with **intelligent artifact caching** to minimize build time and resource usage:
 
-### Parallel Library Builds (5 jobs)
+### Parallel Library Builds (6 jobs)
 Each codec library builds independently on its own runner:
 - `build-x264`: H.264 encoder
 - `build-opus`: Opus audio codec
 - `build-aom`: AOM AV1 codec
 - `build-vpx`: libvpx VP8/VP9 codec
 - `build-svtav1`: SVT-AV1 fast AV1 encoder
+- `build-fdk-aac`: libfdk-aac AAC audio encoder
 
 Each job:
 1. Installs only required dependencies
@@ -102,18 +104,17 @@ This ensures that:
 
 ### Final FFmpeg Build (1 job)
 The `build-ffmpeg` job:
-1. Depends on all 5 library jobs (waits for completion)
+1. Depends on all 6 library jobs (waits for completion)
 2. Downloads all library artifacts (using dynamic artifact names from job outputs)
 3. Merges artifacts into single `ffmpeg-build/` directory
 4. Configures FFmpeg to use pre-built libraries via PKG_CONFIG_PATH
 5. Builds and uploads final FFmpeg binaries
-6. **On failure**: Deletes all newly-created library artifacts to prevent storing broken builds
+6. **On failure**: Deletes all library artifacts to force complete rebuild on next run
 
 ### Artifact Cleanup Strategy
 - **Successful library build**: Artifact uploaded with 90-day retention
 - **Failed library build**: No artifact uploaded (build stops with error)
-- **Failed FFmpeg build**: All library artifacts from current run are deleted
-- **Cached artifacts**: Never deleted, even on FFmpeg build failure
+- **Failed FFmpeg build**: All library artifacts are deleted (both cached and newly-built)
 
 **Benefits:**
 - Libraries build concurrently instead of sequentially
@@ -141,6 +142,7 @@ git push origin <branch>
 3. **libaom**: AV1 video codec for encoding and decoding
 4. **libvpx**: VP8/VP9 video codec with high bitdepth support
 5. **SVT-AV1**: High-performance AV1 encoder optimized for speed
+6. **libfdk-aac**: High-quality AAC audio encoder (requires --enable-nonfree)
 
 ## Future Enhancements
 
