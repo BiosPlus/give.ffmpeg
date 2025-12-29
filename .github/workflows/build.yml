@@ -9,9 +9,13 @@ on:
 
 jobs:
   build-x264:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
+      artifact-name-x86_64: ${{ steps.setup.outputs.artifact-name-x86_64 }}
+      artifact-name-arm64: ${{ steps.setup.outputs.artifact-name-arm64 }}
       cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
@@ -33,8 +37,9 @@ jobs:
           cd x264-temp
           COMMIT_HASH=$(git rev-parse HEAD)
           echo "x264 commit: $COMMIT_HASH"
-          echo "artifact-name=x264-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=x264-build-$COMMIT_HASH" >> $GITHUB_ENV
+          echo "artifact-name=x264-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=x264-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "artifact-name-${{ matrix.arch }}=x264-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
           cd ..
           rm -rf x264-temp
 
@@ -76,9 +81,13 @@ jobs:
           retention-days: 90
 
   build-opus:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
+      artifact-name-x86_64: ${{ steps.setup.outputs.artifact-name-x86_64 }}
+      artifact-name-arm64: ${{ steps.setup.outputs.artifact-name-arm64 }}
       cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
@@ -102,8 +111,9 @@ jobs:
           cd opus-temp
           COMMIT_HASH=$(git rev-parse HEAD)
           echo "libopus commit: $COMMIT_HASH"
-          echo "artifact-name=opus-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=opus-build-$COMMIT_HASH" >> $GITHUB_ENV
+          echo "artifact-name=opus-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=opus-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "artifact-name-${{ matrix.arch }}=opus-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
           cd ..
           rm -rf opus-temp
 
@@ -145,9 +155,13 @@ jobs:
           retention-days: 90
 
   build-aom:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
+      artifact-name-x86_64: ${{ steps.setup.outputs.artifact-name-x86_64 }}
+      artifact-name-arm64: ${{ steps.setup.outputs.artifact-name-arm64 }}
       cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
@@ -170,8 +184,9 @@ jobs:
           cd aom-temp
           COMMIT_HASH=$(git rev-parse HEAD)
           echo "libaom commit: $COMMIT_HASH"
-          echo "artifact-name=aom-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=aom-build-$COMMIT_HASH" >> $GITHUB_ENV
+          echo "artifact-name=aom-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=aom-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "artifact-name-${{ matrix.arch }}=aom-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
           cd ..
           rm -rf aom-temp
 
@@ -213,9 +228,13 @@ jobs:
           retention-days: 90
 
   build-vpx:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
+      artifact-name-x86_64: ${{ steps.setup.outputs.artifact-name-x86_64 }}
+      artifact-name-arm64: ${{ steps.setup.outputs.artifact-name-arm64 }}
       cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
@@ -237,8 +256,9 @@ jobs:
           cd vpx-temp
           COMMIT_HASH=$(git rev-parse HEAD)
           echo "libvpx commit: $COMMIT_HASH"
-          echo "artifact-name=vpx-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=vpx-build-$COMMIT_HASH" >> $GITHUB_ENV
+          echo "artifact-name=vpx-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=vpx-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "artifact-name-${{ matrix.arch }}=vpx-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
           cd ..
           rm -rf vpx-temp
 
@@ -280,9 +300,13 @@ jobs:
           retention-days: 90
 
   build-svtav1:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
+      artifact-name-x86_64: ${{ steps.setup.outputs.artifact-name-x86_64 }}
+      artifact-name-arm64: ${{ steps.setup.outputs.artifact-name-arm64 }}
       cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
@@ -305,8 +329,9 @@ jobs:
           cd svtav1-temp
           COMMIT_HASH=$(git rev-parse HEAD)
           echo "SVT-AV1 commit: $COMMIT_HASH"
-          echo "artifact-name=svtav1-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=svtav1-build-$COMMIT_HASH" >> $GITHUB_ENV
+          echo "artifact-name=svtav1-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=svtav1-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "artifact-name-${{ matrix.arch }}=svtav1-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
           cd ..
           rm -rf svtav1-temp
 
@@ -348,9 +373,13 @@ jobs:
           retention-days: 90
 
   build-fdk-aac:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
+      artifact-name-x86_64: ${{ steps.setup.outputs.artifact-name-x86_64 }}
+      artifact-name-arm64: ${{ steps.setup.outputs.artifact-name-arm64 }}
       cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
@@ -374,8 +403,9 @@ jobs:
           cd fdk-aac-temp
           COMMIT_HASH=$(git rev-parse HEAD)
           echo "libfdk-aac commit: $COMMIT_HASH"
-          echo "artifact-name=fdk-aac-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=fdk-aac-build-$COMMIT_HASH" >> $GITHUB_ENV
+          echo "artifact-name=fdk-aac-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=fdk-aac-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "artifact-name-${{ matrix.arch }}=fdk-aac-build-$COMMIT_HASH-${{ matrix.arch }}" >> $GITHUB_OUTPUT
           cd ..
           rm -rf fdk-aac-temp
 
@@ -417,7 +447,10 @@ jobs:
           retention-days: 90
 
   build-ffmpeg:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     needs: [build-x264, build-opus, build-aom, build-vpx, build-svtav1, build-fdk-aac]
     permissions:
       actions: write  # Required to delete artifacts on failure
@@ -438,40 +471,81 @@ jobs:
             libssl-dev \
             zlib1g-dev
 
+      - name: Determine library commit hashes
+        id: lib-hashes
+        run: |
+          echo "Getting commit hashes for all libraries..."
+
+          # x264
+          git clone --depth 1 https://code.videolan.org/videolan/x264.git x264-temp
+          X264_HASH=$(cd x264-temp && git rev-parse HEAD)
+          echo "X264_ARTIFACT=x264-build-$X264_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          rm -rf x264-temp
+
+          # opus
+          git clone --depth 1 https://github.com/xiph/opus.git opus-temp
+          OPUS_HASH=$(cd opus-temp && git rev-parse HEAD)
+          echo "OPUS_ARTIFACT=opus-build-$OPUS_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          rm -rf opus-temp
+
+          # aom
+          git clone --depth 1 https://aomedia.googlesource.com/aom aom-temp
+          AOM_HASH=$(cd aom-temp && git rev-parse HEAD)
+          echo "AOM_ARTIFACT=aom-build-$AOM_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          rm -rf aom-temp
+
+          # vpx
+          git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git vpx-temp
+          VPX_HASH=$(cd vpx-temp && git rev-parse HEAD)
+          echo "VPX_ARTIFACT=vpx-build-$VPX_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          rm -rf vpx-temp
+
+          # svtav1
+          git clone --depth 1 https://gitlab.com/AOMediaCodec/SVT-AV1.git svtav1-temp
+          SVTAV1_HASH=$(cd svtav1-temp && git rev-parse HEAD)
+          echo "SVTAV1_ARTIFACT=svtav1-build-$SVTAV1_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          rm -rf svtav1-temp
+
+          # fdk-aac
+          git clone --depth 1 https://github.com/mstorsjo/fdk-aac.git fdk-aac-temp
+          FDK_AAC_HASH=$(cd fdk-aac-temp && git rev-parse HEAD)
+          echo "FDK_AAC_ARTIFACT=fdk-aac-build-$FDK_AAC_HASH-${{ matrix.arch }}" >> $GITHUB_ENV
+          rm -rf fdk-aac-temp
+
       - name: Download x264 build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-x264.outputs.artifact-name }}
+          name: ${{ env.X264_ARTIFACT }}
           path: ffmpeg-build/
 
       - name: Download libopus build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-opus.outputs.artifact-name }}
+          name: ${{ env.OPUS_ARTIFACT }}
           path: ffmpeg-build/
 
       - name: Download libaom build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-aom.outputs.artifact-name }}
+          name: ${{ env.AOM_ARTIFACT }}
           path: ffmpeg-build/
 
       - name: Download libvpx build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-vpx.outputs.artifact-name }}
+          name: ${{ env.VPX_ARTIFACT }}
           path: ffmpeg-build/
 
       - name: Download SVT-AV1 build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-svtav1.outputs.artifact-name }}
+          name: ${{ env.SVTAV1_ARTIFACT }}
           path: ffmpeg-build/
 
       - name: Download libfdk-aac build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-fdk-aac.outputs.artifact-name }}
+          name: ${{ env.FDK_AAC_ARTIFACT }}
           path: ffmpeg-build/
 
       - name: Verify downloaded libraries
@@ -501,7 +575,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-linux-x86_64
+          name: ffmpeg-linux-${{ matrix.arch }}
           path: |
             ffmpeg-build/bin/ffmpeg
             ffmpeg-build/bin/ffprobe
@@ -513,13 +587,13 @@ jobs:
         run: |
           echo "FFmpeg build failed - deleting all library artifacts to force full rebuild..."
 
-          # Collect all library artifact names (regardless of cache status)
-          ARTIFACTS_TO_DELETE="${{ needs.build-x264.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-opus.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-aom.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-vpx.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-svtav1.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-fdk-aac.outputs.artifact-name }}"
+          # Collect all library artifact names for this architecture (regardless of cache status)
+          ARTIFACTS_TO_DELETE="${{ env.X264_ARTIFACT }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ env.OPUS_ARTIFACT }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ env.AOM_ARTIFACT }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ env.VPX_ARTIFACT }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ env.SVTAV1_ARTIFACT }}"
+          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ env.FDK_AAC_ARTIFACT }}"
 
           echo "Deleting artifacts: $ARTIFACTS_TO_DELETE"
           DELETED=0

@@ -4,9 +4,10 @@
 
 Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linux with maximum performance optimization.
 
-## Target Platform
+## Target Platforms
 
-- **Linux** (ubuntu-latest): x86_64
+- **Linux x86_64** (ubuntu-latest): Intel/AMD 64-bit processors
+- **Linux ARM64** (ubuntu-24.04-arm): ARM 64-bit processors (aarch64)
 
 ## Build Philosophy
 
@@ -38,9 +39,11 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 
 ### Compiler Flags
 - `-O3` optimization level
-- `-march=native` equivalent per platform
+- Architecture-specific optimizations:
+  - x86_64: `-march=x86-64-v3` (SSE4.2, AVX2)
+  - ARM64: `-march=armv8-a` (NEON, CRC)
 - Link-time optimization (LTO) where supported
-- Platform-specific SIMD: SSE4.2, AVX2 (x86), NEON (ARM)
+- Platform-specific SIMD automatically detected and enabled
 
 ### FFmpeg Configure Options
 - `--enable-gpl` (for x264/x265)
@@ -70,10 +73,10 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 
 ## Build Architecture
 
-The build process uses **parallel GitHub Actions jobs** with **intelligent artifact caching** to minimize build time and resource usage:
+The build process uses **parallel GitHub Actions jobs** with **multi-architecture matrix builds** and **intelligent artifact caching** to minimize build time and resource usage:
 
-### Parallel Library Builds (6 jobs)
-Each codec library builds independently on its own runner:
+### Parallel Library Builds (6 jobs × 2 architectures = 12 parallel builds)
+Each codec library builds independently for both x86_64 and ARM64 on their respective runners:
 - `build-x264`: H.264 encoder
 - `build-opus`: Opus audio codec
 - `build-aom`: AOM AV1 codec
@@ -90,26 +93,29 @@ Each job:
 6. Artifacts retained for 90 days (extended from 1 day due to caching value)
 
 ### Artifact Naming Convention
-Artifacts use checksum-based naming: `{library}-build-{git-commit-hash}`
+Artifacts use architecture-aware checksum-based naming: `{library}-build-{git-commit-hash}-{arch}`
 
 Examples:
-- `x264-build-a8b68ebfaa68621b5ac8907610d3335971839d52`
-- `opus-build-9e39d6f1f3ec87e5701f04ae9d8c58cec4a4f9d9`
-- `aom-build-3c6713d9e08c5f0e0b3d9c4e42d6e4c4e6f2a9b1`
+- `x264-build-a8b68ebfaa68621b5ac8907610d3335971839d52-x86_64`
+- `x264-build-a8b68ebfaa68621b5ac8907610d3335971839d52-arm64`
+- `opus-build-9e39d6f1f3ec87e5701f04ae9d8c58cec4a4f9d9-x86_64`
+- `aom-build-3c6713d9e08c5f0e0b3d9c4e42d6e4c4e6f2a9b1-arm64`
 
 This ensures that:
 - **Builds are only triggered when upstream changes** (cache hit rate of ~95%+)
-- **Multiple workflow runs can share artifacts** across branches and time
-- **Artifact names are deterministic** and traceable to upstream commits
+- **Multiple workflow runs can share artifacts** across branches, architectures, and time
+- **Artifact names are deterministic** and traceable to upstream commits and target architecture
+- **Each architecture maintains separate cache** preventing cross-contamination
 
-### Final FFmpeg Build (1 job)
-The `build-ffmpeg` job:
-1. Depends on all 6 library jobs (waits for completion)
-2. Downloads all library artifacts (using dynamic artifact names from job outputs)
-3. Merges artifacts into single `ffmpeg-build/` directory
-4. Configures FFmpeg to use pre-built libraries via PKG_CONFIG_PATH
-5. Builds and uploads final FFmpeg binaries
-6. **On failure**: Deletes all library artifacts to force complete rebuild on next run
+### Final FFmpeg Build (2 jobs - one per architecture)
+The `build-ffmpeg` job matrix:
+1. Depends on all 6 library jobs (waits for completion of matching architecture)
+2. Determines commit hashes for all upstream libraries
+3. Downloads architecture-specific library artifacts
+4. Merges artifacts into single `ffmpeg-build/` directory
+5. Configures FFmpeg to use pre-built libraries via PKG_CONFIG_PATH
+6. Builds and uploads final FFmpeg binaries as `ffmpeg-linux-{arch}`
+7. **On failure**: Deletes architecture-specific library artifacts to force complete rebuild on next run
 
 ### Artifact Cleanup Strategy
 - **Successful library build**: Artifact uploaded with 90-day retention
@@ -117,21 +123,25 @@ The `build-ffmpeg` job:
 - **Failed FFmpeg build**: All library artifacts are deleted (both cached and newly-built)
 
 **Benefits:**
-- Libraries build concurrently instead of sequentially
+- Libraries build concurrently for both architectures instead of sequentially
 - **~10x faster on cache hits** (30 seconds vs 5-7 mins) when upstream hasn't changed
 - **~3x faster on cache misses** (5-7 mins vs 15-20 mins) due to parallel builds
+- **Dual-architecture support** with no additional complexity
 - **Significantly reduced runner minutes** and carbon footprint
 - Each job has minimal dependencies
-- Easy to add new codecs as additional parallel jobs
+- Easy to add new codecs or architectures as additional parallel jobs
 - Broken builds don't pollute artifact storage
 
 ## Development Commands
 
 ```bash
-# Test Linux build locally (requires Docker)
+# Test x86_64 build locally (requires Docker)
 docker run --rm -v $(pwd):/work -w /work ubuntu:22.04 bash scripts/build-linux.sh
 
-# Trigger CI build
+# Test ARM64 build locally (requires Docker with ARM support or ARM host)
+docker run --rm --platform linux/arm64 -v $(pwd):/work -w /work ubuntu:22.04 bash scripts/build-linux.sh
+
+# Trigger CI build (builds both architectures)
 git push origin <branch>
 ```
 

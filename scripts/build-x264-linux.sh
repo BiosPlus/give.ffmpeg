@@ -1,7 +1,24 @@
 #!/bin/bash
 set -e
 
-echo "=== Building x264 for Linux x86_64 ==="
+# Detect architecture
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64)
+        ARCH_NAME="x86_64"
+        ARCH_FLAGS="-O3 -march=x86-64-v3 -mtune=generic"
+        ;;
+    aarch64|arm64)
+        ARCH_NAME="arm64"
+        ARCH_FLAGS="-O3 -march=armv8-a -mtune=generic"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
+
+echo "=== Building x264 for Linux $ARCH_NAME ==="
 
 # Configuration
 PREFIX="$(pwd)/ffmpeg-build"
@@ -18,7 +35,7 @@ echo "Configuring x264..."
     --enable-static \
     --disable-cli \
     --disable-opencl \
-    --extra-cflags="-O3 -march=x86-64-v3 -mtune=generic"
+    --extra-cflags="$ARCH_FLAGS"
 
 echo "Building x264 with $JOBS jobs..."
 make -j$JOBS
