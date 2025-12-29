@@ -280,6 +280,13 @@ jobs:
           ls -lah ffmpeg-build/include/ || true
           echo "=== pkg-config files ==="
           ls -lah ffmpeg-build/lib/pkgconfig/ || true
+          echo "=== x265.pc content ==="
+          cat ffmpeg-build/lib/pkgconfig/x265.pc || echo "x265.pc not found!"
+          echo "=== Testing pkg-config for x265 ==="
+          export PKG_CONFIG_PATH="$(pwd)/ffmpeg-build/lib/pkgconfig:$PKG_CONFIG_PATH"
+          pkg-config --exists x265 && echo "✓ x265 found" || echo "✗ x265 NOT found"
+          pkg-config --libs x265 || echo "Failed to get libs"
+          pkg-config --cflags x265 || echo "Failed to get cflags"
 
       - name: Build FFmpeg
         id: build-ffmpeg
