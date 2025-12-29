@@ -71,7 +71,7 @@ Build bleeding-edge FFmpeg binaries using GitHub Actions public runners for Linu
 
 ## Build Architecture
 
-The build process uses **parallel GitHub Actions jobs** with **intelligent artifact caching** to minimize build time and resource usage:
+The build process uses **parallel GitHub Actions jobs** to maximize build performance:
 
 ### Parallel Library Builds (7 jobs)
 Each codec library builds independently on its own runner:
@@ -85,47 +85,42 @@ Each codec library builds independently on its own runner:
 
 Each job:
 1. Installs only required dependencies
-2. **Detects upstream commit hash** from the library's git repository
-3. **Attempts to download cached artifact** from previous runs using checksum-based naming
-4. **Builds library only if cache miss** (no matching artifact found)
-5. **Uploads build artifacts** with checksum-based name (only on successful build)
-6. Artifacts retained for 90 days (extended from 1 day due to caching value)
+2. Builds library from latest upstream master/main branch
+3. Uploads build artifacts for use by FFmpeg build
+4. Artifacts retained for 1 day (only needed for current workflow run)
 
 ### Artifact Naming Convention
-Artifacts use checksum-based naming: `{library}-build-{git-commit-hash}`
+Artifacts use simple static names: `{library}-build`
 
 Examples:
-- `x264-build-a8b68ebfaa68621b5ac8907610d3335971839d52`
-- `opus-build-9e39d6f1f3ec87e5701f04ae9d8c58cec4a4f9d9`
-- `aom-build-3c6713d9e08c5f0e0b3d9c4e42d6e4c4e6f2a9b1`
-
-This ensures that:
-- **Builds are only triggered when upstream changes** (cache hit rate of ~95%+)
-- **Multiple workflow runs can share artifacts** across branches and time
-- **Artifact names are deterministic** and traceable to upstream commits
+- `x264-build`
+- `x265-build`
+- `opus-build`
+- `aom-build`
 
 ### Final FFmpeg Build (1 job)
 The `build-ffmpeg` job:
 1. Depends on all 7 library jobs (waits for completion)
-2. Downloads all library artifacts (using dynamic artifact names from job outputs)
+2. Downloads all library artifacts
 3. Merges artifacts into single `ffmpeg-build/` directory
 4. Configures FFmpeg to use pre-built libraries via PKG_CONFIG_PATH
 5. Builds and uploads final FFmpeg binaries
-6. **On failure**: Deletes all library artifacts to force complete rebuild on next run
+6. **On failure**: Deletes all library artifacts from current run
 
-### Artifact Cleanup Strategy
-- **Successful library build**: Artifact uploaded with 90-day retention
+### Artifact Strategy
+- **Successful library build**: Artifact uploaded with 1-day retention
 - **Failed library build**: No artifact uploaded (build stops with error)
-- **Failed FFmpeg build**: All library artifacts are deleted (both cached and newly-built)
+- **Failed FFmpeg build**: All library artifacts from current run are deleted
+- **No cross-run caching**: Each workflow run builds fresh from upstream
 
 **Benefits:**
 - Libraries build concurrently instead of sequentially
-- **~10x faster on cache hits** (30 seconds vs 5-7 mins) when upstream hasn't changed
-- **~3x faster on cache misses** (5-7 mins vs 15-20 mins) due to parallel builds
-- **Significantly reduced runner minutes** and carbon footprint
+- **~3x faster** (5-7 mins vs 15-20 mins) due to parallel builds
+- Always uses latest upstream code (bleeding edge)
+- Simple artifact management
 - Each job has minimal dependencies
 - Easy to add new codecs as additional parallel jobs
-- Broken builds don't pollute artifact storage
+- Clean artifact storage (1-day retention)
 
 ## Development Commands
 

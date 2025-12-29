@@ -10,9 +10,6 @@ on:
 jobs:
   build-x264:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,61 +22,21 @@ jobs:
             nasm \
             git
 
-      - name: Get x264 commit hash
-        id: setup
-        run: |
-          echo "Getting x264 latest commit hash..."
-          git clone --depth 1 https://code.videolan.org/videolan/x264.git x264-temp
-          cd x264-temp
-          COMMIT_HASH=$(git rev-parse HEAD)
-          echo "x264 commit: $COMMIT_HASH"
-          echo "artifact-name=x264-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=x264-build-$COMMIT_HASH" >> $GITHUB_ENV
-          cd ..
-          rm -rf x264-temp
-
-      - name: Try to download cached artifact
-        id: download-cache
-        continue-on-error: true
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          workflow: build.yml
-          path: ffmpeg-build/
-          search_artifacts: true
-          if_no_artifact_found: ignore
-
-      - name: Check if artifact was actually downloaded
-        id: check-cache
-        run: |
-          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
-            echo "Cache hit - artifact was downloaded"
-            echo "hit=true" >> $GITHUB_OUTPUT
-          else
-            echo "Cache miss - artifact not found"
-            echo "hit=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build x264
-        if: steps.check-cache.outputs.hit != 'true'
         run: |
-          echo "Cache miss - building x264 from source..."
+          echo "Building x264 from source..."
           chmod +x scripts/build-x264-linux.sh
           ./scripts/build-x264-linux.sh
 
       - name: Upload x264 artifact
-        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: x264-build
           path: ffmpeg-build/
-          retention-days: 90
+          retention-days: 1
 
   build-opus:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -94,61 +51,21 @@ jobs:
             libtool \
             git
 
-      - name: Get libopus commit hash
-        id: setup
-        run: |
-          echo "Getting libopus latest commit hash..."
-          git clone --depth 1 https://github.com/xiph/opus.git opus-temp
-          cd opus-temp
-          COMMIT_HASH=$(git rev-parse HEAD)
-          echo "libopus commit: $COMMIT_HASH"
-          echo "artifact-name=opus-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=opus-build-$COMMIT_HASH" >> $GITHUB_ENV
-          cd ..
-          rm -rf opus-temp
-
-      - name: Try to download cached artifact
-        id: download-cache
-        continue-on-error: true
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          workflow: build.yml
-          path: ffmpeg-build/
-          search_artifacts: true
-          if_no_artifact_found: ignore
-
-      - name: Check if artifact was actually downloaded
-        id: check-cache
-        run: |
-          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
-            echo "Cache hit - artifact was downloaded"
-            echo "hit=true" >> $GITHUB_OUTPUT
-          else
-            echo "Cache miss - artifact not found"
-            echo "hit=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build libopus
-        if: steps.check-cache.outputs.hit != 'true'
         run: |
-          echo "Cache miss - building libopus from source..."
+          echo "Building libopus from source..."
           chmod +x scripts/build-opus-linux.sh
           ./scripts/build-opus-linux.sh
 
       - name: Upload libopus artifact
-        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: opus-build
           path: ffmpeg-build/
-          retention-days: 90
+          retention-days: 1
 
   build-aom:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -162,61 +79,21 @@ jobs:
             nasm \
             git
 
-      - name: Get libaom commit hash
-        id: setup
-        run: |
-          echo "Getting libaom latest commit hash..."
-          git clone --depth 1 https://aomedia.googlesource.com/aom aom-temp
-          cd aom-temp
-          COMMIT_HASH=$(git rev-parse HEAD)
-          echo "libaom commit: $COMMIT_HASH"
-          echo "artifact-name=aom-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=aom-build-$COMMIT_HASH" >> $GITHUB_ENV
-          cd ..
-          rm -rf aom-temp
-
-      - name: Try to download cached artifact
-        id: download-cache
-        continue-on-error: true
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          workflow: build.yml
-          path: ffmpeg-build/
-          search_artifacts: true
-          if_no_artifact_found: ignore
-
-      - name: Check if artifact was actually downloaded
-        id: check-cache
-        run: |
-          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
-            echo "Cache hit - artifact was downloaded"
-            echo "hit=true" >> $GITHUB_OUTPUT
-          else
-            echo "Cache miss - artifact not found"
-            echo "hit=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build libaom
-        if: steps.check-cache.outputs.hit != 'true'
         run: |
-          echo "Cache miss - building libaom from source..."
+          echo "Building libaom from source..."
           chmod +x scripts/build-aom-linux.sh
           ./scripts/build-aom-linux.sh
 
       - name: Upload libaom artifact
-        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: aom-build
           path: ffmpeg-build/
-          retention-days: 90
+          retention-days: 1
 
   build-vpx:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -229,61 +106,21 @@ jobs:
             yasm \
             git
 
-      - name: Get libvpx commit hash
-        id: setup
-        run: |
-          echo "Getting libvpx latest commit hash..."
-          git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git vpx-temp
-          cd vpx-temp
-          COMMIT_HASH=$(git rev-parse HEAD)
-          echo "libvpx commit: $COMMIT_HASH"
-          echo "artifact-name=vpx-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=vpx-build-$COMMIT_HASH" >> $GITHUB_ENV
-          cd ..
-          rm -rf vpx-temp
-
-      - name: Try to download cached artifact
-        id: download-cache
-        continue-on-error: true
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          workflow: build.yml
-          path: ffmpeg-build/
-          search_artifacts: true
-          if_no_artifact_found: ignore
-
-      - name: Check if artifact was actually downloaded
-        id: check-cache
-        run: |
-          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
-            echo "Cache hit - artifact was downloaded"
-            echo "hit=true" >> $GITHUB_OUTPUT
-          else
-            echo "Cache miss - artifact not found"
-            echo "hit=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build libvpx
-        if: steps.check-cache.outputs.hit != 'true'
         run: |
-          echo "Cache miss - building libvpx from source..."
+          echo "Building libvpx from source..."
           chmod +x scripts/build-vpx-linux.sh
           ./scripts/build-vpx-linux.sh
 
       - name: Upload libvpx artifact
-        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: vpx-build
           path: ffmpeg-build/
-          retention-days: 90
+          retention-days: 1
 
   build-svtav1:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -297,61 +134,21 @@ jobs:
             nasm \
             git
 
-      - name: Get SVT-AV1 commit hash
-        id: setup
-        run: |
-          echo "Getting SVT-AV1 latest commit hash..."
-          git clone --depth 1 https://gitlab.com/AOMediaCodec/SVT-AV1.git svtav1-temp
-          cd svtav1-temp
-          COMMIT_HASH=$(git rev-parse HEAD)
-          echo "SVT-AV1 commit: $COMMIT_HASH"
-          echo "artifact-name=svtav1-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=svtav1-build-$COMMIT_HASH" >> $GITHUB_ENV
-          cd ..
-          rm -rf svtav1-temp
-
-      - name: Try to download cached artifact
-        id: download-cache
-        continue-on-error: true
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          workflow: build.yml
-          path: ffmpeg-build/
-          search_artifacts: true
-          if_no_artifact_found: ignore
-
-      - name: Check if artifact was actually downloaded
-        id: check-cache
-        run: |
-          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
-            echo "Cache hit - artifact was downloaded"
-            echo "hit=true" >> $GITHUB_OUTPUT
-          else
-            echo "Cache miss - artifact not found"
-            echo "hit=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build SVT-AV1
-        if: steps.check-cache.outputs.hit != 'true'
         run: |
-          echo "Cache miss - building SVT-AV1 from source..."
+          echo "Building SVT-AV1 from source..."
           chmod +x scripts/build-svtav1-linux.sh
           ./scripts/build-svtav1-linux.sh
 
       - name: Upload SVT-AV1 artifact
-        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: svtav1-build
           path: ffmpeg-build/
-          retention-days: 90
+          retention-days: 1
 
   build-fdk-aac:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -366,61 +163,21 @@ jobs:
             libtool \
             git
 
-      - name: Get libfdk-aac commit hash
-        id: setup
-        run: |
-          echo "Getting libfdk-aac latest commit hash..."
-          git clone --depth 1 https://github.com/mstorsjo/fdk-aac.git fdk-aac-temp
-          cd fdk-aac-temp
-          COMMIT_HASH=$(git rev-parse HEAD)
-          echo "libfdk-aac commit: $COMMIT_HASH"
-          echo "artifact-name=fdk-aac-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=fdk-aac-build-$COMMIT_HASH" >> $GITHUB_ENV
-          cd ..
-          rm -rf fdk-aac-temp
-
-      - name: Try to download cached artifact
-        id: download-cache
-        continue-on-error: true
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          workflow: build.yml
-          path: ffmpeg-build/
-          search_artifacts: true
-          if_no_artifact_found: ignore
-
-      - name: Check if artifact was actually downloaded
-        id: check-cache
-        run: |
-          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
-            echo "Cache hit - artifact was downloaded"
-            echo "hit=true" >> $GITHUB_OUTPUT
-          else
-            echo "Cache miss - artifact not found"
-            echo "hit=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build libfdk-aac
-        if: steps.check-cache.outputs.hit != 'true'
         run: |
-          echo "Cache miss - building libfdk-aac from source..."
+          echo "Building libfdk-aac from source..."
           chmod +x scripts/build-fdk-aac-linux.sh
           ./scripts/build-fdk-aac-linux.sh
 
       - name: Upload libfdk-aac artifact
-        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: fdk-aac-build
           path: ffmpeg-build/
-          retention-days: 90
+          retention-days: 1
 
   build-x265:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-name: ${{ steps.setup.outputs.artifact-name }}
-      cache-hit: ${{ steps.check-cache.outputs.hit == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -436,55 +193,18 @@ jobs:
             wget \
             git
 
-      - name: Get libx265 commit hash
-        id: setup
-        run: |
-          echo "Getting libx265 latest commit hash..."
-          git clone --depth 1 https://bitbucket.org/multicoreware/x265_git.git x265-temp
-          cd x265-temp
-          COMMIT_HASH=$(git rev-parse HEAD)
-          echo "libx265 commit: $COMMIT_HASH"
-          echo "artifact-name=x265-build-$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=x265-build-$COMMIT_HASH" >> $GITHUB_ENV
-          cd ..
-          rm -rf x265-temp
-
-      - name: Try to download cached artifact
-        id: download-cache
-        continue-on-error: true
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          workflow: build.yml
-          path: ffmpeg-build/
-          search_artifacts: true
-          if_no_artifact_found: ignore
-
-      - name: Check if artifact was actually downloaded
-        id: check-cache
-        run: |
-          if [ -d "ffmpeg-build/lib" ] && [ -n "$(ls -A ffmpeg-build/lib 2>/dev/null)" ]; then
-            echo "Cache hit - artifact was downloaded"
-            echo "hit=true" >> $GITHUB_OUTPUT
-          else
-            echo "Cache miss - artifact not found"
-            echo "hit=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Build libx265
-        if: steps.check-cache.outputs.hit != 'true'
         run: |
-          echo "Cache miss - building libx265 from source..."
+          echo "Building libx265 from source..."
           chmod +x scripts/build-x265-linux.sh
           ./scripts/build-x265-linux.sh
 
       - name: Upload libx265 artifact
-        if: success() && steps.check-cache.outputs.hit != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_NAME }}
+          name: x265-build
           path: ffmpeg-build/
-          retention-days: 90
+          retention-days: 1
 
   build-ffmpeg:
     runs-on: ubuntu-latest
@@ -511,43 +231,43 @@ jobs:
       - name: Download x264 build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-x264.outputs.artifact-name }}
+          name: x264-build
           path: ffmpeg-build/
 
       - name: Download libopus build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-opus.outputs.artifact-name }}
+          name: opus-build
           path: ffmpeg-build/
 
       - name: Download libaom build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-aom.outputs.artifact-name }}
+          name: aom-build
           path: ffmpeg-build/
 
       - name: Download libvpx build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-vpx.outputs.artifact-name }}
+          name: vpx-build
           path: ffmpeg-build/
 
       - name: Download SVT-AV1 build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-svtav1.outputs.artifact-name }}
+          name: svtav1-build
           path: ffmpeg-build/
 
       - name: Download libfdk-aac build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-fdk-aac.outputs.artifact-name }}
+          name: fdk-aac-build
           path: ffmpeg-build/
 
       - name: Download libx265 build
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.build-x265.outputs.artifact-name }}
+          name: x265-build
           path: ffmpeg-build/
 
       - name: Verify downloaded libraries
@@ -587,16 +307,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          echo "FFmpeg build failed - deleting all library artifacts to force full rebuild..."
+          echo "FFmpeg build failed - deleting all library artifacts..."
 
-          # Collect all library artifact names (regardless of cache status)
-          ARTIFACTS_TO_DELETE="${{ needs.build-x264.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-opus.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-aom.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-vpx.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-svtav1.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-fdk-aac.outputs.artifact-name }}"
-          ARTIFACTS_TO_DELETE="$ARTIFACTS_TO_DELETE ${{ needs.build-x265.outputs.artifact-name }}"
+          # Static artifact names
+          ARTIFACTS_TO_DELETE="x264-build opus-build aom-build vpx-build svtav1-build fdk-aac-build x265-build"
 
           echo "Deleting artifacts: $ARTIFACTS_TO_DELETE"
           DELETED=0
