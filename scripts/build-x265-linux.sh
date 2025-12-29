@@ -47,5 +47,10 @@ PATH="$HOME/bin:$PATH" make -j$JOBS
 echo "Installing libx265..."
 make install
 
+# Fix x265 pkg-config file to include pthread (known x265 bug)
+# https://bitbucket.org/multicoreware/x265_git/issues/371/x265-not-found-using-pkg-config
+echo "Patching x265.pc to add -lpthread..."
+sed -i 's/Libs.private: /Libs.private: -lpthread /' "$PREFIX/lib/pkgconfig/x265.pc"
+
 echo "=== libx265 build complete ==="
 ls -lh "$PREFIX/lib/"*x265* 2>/dev/null || true
