@@ -226,7 +226,8 @@ jobs:
             pkg-config \
             git \
             libssl-dev \
-            zlib1g-dev
+            zlib1g-dev \
+            libnuma-dev
 
       - name: Download x264 build
         uses: actions/download-artifact@v4
